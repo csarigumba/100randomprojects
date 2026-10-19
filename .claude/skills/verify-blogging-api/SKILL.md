@@ -10,7 +10,7 @@ Surface: HTTP JSON API (`01-blogging-platform-api/`, Fastify, `node:sqlite`). Dr
 ## Launch
 ```
 cd 01-blogging-platform-api && npm install
-PORT=3199 DB_PATH=$(mktemp -u /tmp/blog-verify-XXXX.db) node src/server.js > /tmp/blog-verify.log 2>&1 & echo $! > /tmp/blog-verify.pid
+PORT=3199 DB_PATH=/tmp/blog-verify-3199.db node src/server.js > /tmp/blog-verify.log 2>&1 & echo $! > /tmp/blog-verify.pid
 ```
 Ready when `curl -s localhost:3199/health` returns `{"ok":true}`. Own port 3199 + temp DB, so it never touches a dev instance's data. `DB_PATH` defaults to `blog.db` (`:memory:` also works).
 
