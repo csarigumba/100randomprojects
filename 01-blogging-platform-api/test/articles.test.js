@@ -78,3 +78,28 @@ test('put replaces and bumps updatedAt; delete then 404', async (t) => {
   assert.equal(d.body, '')
   assert.equal((await req('GET', `/articles/${a.id}`)).statusCode, 404)
 })
+
+test('array query params -> 400', async (t) => {
+  const req = await setup(t)
+  for (const q of ['tag=a&tag=b', 'publishedAfter=2020-01-01&publishedAfter=2021-01-01', 'publishedBefore=2020-01-01&publishedBefore=2021-01-01']) {
+    assert.equal((await req('GET', '/articles?' + q)).statusCode, 400, q)
+  }
+})
+
+test('non-string publishedAt -> 400', async (t) => {
+  const req = await setup(t)
+  const { id } = (await req('POST', '/articles', { title: 'a', content: 'b' })).json()
+  for (const publishedAt of [null, 0, true]) {
+    const b = { title: 'a', content: 'b', publishedAt }
+    assert.equal((await req('POST', '/articles', b)).statusCode, 400, String(publishedAt))
+    assert.equal((await req('PUT', `/articles/${id}`, b)).statusCode, 400, String(publishedAt))
+  }
+})
+
+test('PUT without publishedAt/tags resets them', async (t) => {
+  const req = await setup(t)
+  const a = (await req('POST', '/articles', { title: 'a', content: 'b', tags: ['t'], publishedAt: '2020-01-01' })).json()
+  const u = (await req('PUT', `/articles/${a.id}`, { title: 'a', content: 'b' })).json()
+  assert.deepEqual(u.tags, [])
+  assert.ok(u.publishedAt > '2024-01-01')
+})

@@ -1,6 +1,6 @@
 # Blogging Platform API
 
-Fastify 5 + SQLite (`node:sqlite`). Needs a Node version with `node:sqlite`.
+Fastify 5 + SQLite (`node:sqlite`). Needs Node 24+.
 
 ## Run
 
@@ -31,7 +31,7 @@ curl 'localhost:3000/articles?tag=intro&publishedAfter=2023-01-01&publishedBefor
 # get one (404 if missing)
 curl localhost:3000/articles/1
 
-# full replace (404 if missing, 400 if invalid)
+# full replace (404 if missing, 400 if invalid); omitted publishedAt resets to now, omitted tags to []
 curl -X PUT localhost:3000/articles/1 -H 'content-type: application/json' \
   -d '{"title":"Hi","content":"Again","tags":["x"]}'
 

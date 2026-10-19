@@ -3,6 +3,7 @@ import { DatabaseSync } from 'node:sqlite'
 
 const toArticle = (r) => ({ ...r, tags: JSON.parse(r.tags) })
 const iso = (v) => {
+  if (typeof v !== 'string') return null
   const d = new Date(v)
   return isNaN(d) ? null : d.toISOString()
 }
@@ -40,6 +41,7 @@ export function build({ dbPath = process.env.DB_PATH || 'blog.db' } = {}) {
     const args = []
     const { tag, publishedAfter, publishedBefore } = req.query
     if (tag !== undefined) {
+      if (typeof tag !== 'string') return reply.code(400).send({ error: 'tag must be a string' })
       where.push('EXISTS (SELECT 1 FROM json_each(articles.tags) WHERE value = ?)')
       args.push(tag)
     }
