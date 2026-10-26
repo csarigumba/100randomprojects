@@ -23,6 +23,7 @@ test('paragraphs join lines, blank lines split blocks', () => {
 
 test('emphasis', () => {
   assert.equal(render('**s** *e* _u_'), '<p><strong>s</strong> <em>e</em> <em>u</em></p>');
+  assert.equal(render('my_file_name a * b * c a ** b ** c'), '<p>my_file_name a * b * c a ** b ** c</p>');
 });
 
 test('links: safe schemes get href, others are text', () => {
