@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Kanban board</title>
+  <style>#board { display: flex; gap: 1rem; } #board section { flex: 1; }</style>
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <form id="add-form">
+    <input id="title" name="title" required autocomplete="off" aria-label="Card title">
+    <button type="submit">Add</button>
+  </form>
+  <main id="board">
+    <section data-column="todo"><h2>To do</h2><ul></ul></section>
+    <section data-column="doing"><h2>Doing</h2><ul></ul></section>
+    <section data-column="done"><h2>Done</h2><ul></ul></section>
+  </main>
+</body>
+</html>
