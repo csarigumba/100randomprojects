@@ -6,7 +6,7 @@ const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
 const files = { '/': 'index.html', '/index.html': 'index.html', '/app.js': 'app.js', '/game.js': 'game.js' };
 
 export const server = createServer(async (req, res) => {
-  const name = files[new URL(req.url, 'http://x').pathname];
+  const name = files[req.url.split('?')[0]];
   if (!name) return res.writeHead(404).end('Not found');
   try {
     const body = await readFile(new URL(`../public/${name}`, import.meta.url));
