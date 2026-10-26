@@ -1,0 +1,8 @@
+{
+  "name": "api",
+  "debug": true,
+  "server": { "host": "localhost", "ports": [8080, 9090, 9091], "tls": { "cert": "c.pem" } },
+  "features": ["auth"],
+  "meta": { "build": 42, "owner": "ops" },
+  "region": "eu-1"
+}

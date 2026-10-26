@@ -1,0 +1,7 @@
+{
+  "name": "api",
+  "debug": false,
+  "server": { "host": "localhost", "ports": [8080, 8081], "tls": null },
+  "features": ["auth", "logs"],
+  "meta": { "build": 41, "owner": "ops" }
+}
