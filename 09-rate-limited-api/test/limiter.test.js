@@ -30,6 +30,13 @@ test('empty bucket is full after windowMs and caps at limit', () => {
   assert.equal(take('a').remaining, 4);
 });
 
+test('rejects non-positive-integer limit or windowMs', () => {
+  for (const bad of [0, NaN, -1, 1.5]) {
+    assert.throws(() => createLimiter({ limit: bad, windowMs: 10000 }));
+    assert.throws(() => createLimiter({ limit: 5, windowMs: bad }));
+  }
+});
+
 test('keys have separate buckets', () => {
   const { take } = setup();
   for (let i = 0; i < 5; i++) take('a');
