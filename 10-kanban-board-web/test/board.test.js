@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { COLUMNS, emptyBoard, addCard, moveCard, deleteCard } from '../public/board.js';
+import { COLUMNS, emptyBoard, addCard, moveCard, deleteCard, parseBoard } from '../public/board.js';
 
 const deepFreeze = (o) => {
   Object.values(o).forEach((v) => typeof v === 'object' && deepFreeze(v));
@@ -68,4 +68,15 @@ test('deleteCard removes the card', () => {
 test('deleteCard with unknown id leaves content unchanged', () => {
   const b = sample();
   assert.deepEqual(deleteCard(b, 'zzz'), structuredClone(b));
+});
+
+test('parseBoard returns emptyBoard for missing, invalid, or wrong-shape input', () => {
+  for (const raw of [null, 'not json', '{}', 'null', '{"todo":[],"doing":"x","done":[]}']) {
+    assert.deepEqual(parseBoard(raw), emptyBoard(), String(raw));
+  }
+});
+
+test('parseBoard round-trips a valid board', () => {
+  const b = sample();
+  assert.deepEqual(parseBoard(JSON.stringify(b)), b);
 });
