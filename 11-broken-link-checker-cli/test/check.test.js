@@ -17,6 +17,7 @@ const listen = (pages) => new Promise((resolve) => {
     requests.push(`http://127.0.0.1:${server.address().port}${req.url}`);
     const page = pages[req.url];
     if (!page) return res.writeHead(404).end('not found');
+    if (typeof page === 'string') return res.writeHead(302, { location: page }).end();
     res.writeHead(200, { 'content-type': page[0] }).end(page[1]);
   }).listen(0, '127.0.0.1', () => resolve(server));
 });
@@ -30,17 +31,28 @@ before(async () => {
   closed.close();
   Object.assign(site, {
     '/': html(`<a href="/about">About</a> <a href="/missing">x</a> <a href="#top">top</a> <a href="mailto:a@b.c">m</a>
-      <a href="tel:1">t</a> <a href='${extBase}/ok'>ok</a> <a href=${extBase}/gone>gone</a>
+      <a href="tel:1">t</a> <a href="ftp://x/y">f</a> <a href="sms:1">s</a> <a href="file:///etc">l</a> <a href='${extBase}/ok'>ok</a> <a href=${extBase}/gone>gone</a>
       <img src="/logo.png"> <img alt="x" src="/nope.png"> <a class="x" href="/about#again">About</a>`),
     '/about': html(`<a href="/">Home</a> <a href="deep#x">Deep</a> <a href="${refused}">refused</a>`),
     '/deep': html('<a href="/about">About</a> <a href="/missing">Missing again</a>'),
     '/logo.png': ['image/png', 'png'],
-    '/clean': html('<a href="/clean/a">A</a> <img src="/logo.png">'),
+    '/clean': html('<a href="/clean/a">A</a> <img src="/logo.png"> <img src="/q?a=1&amp;b=2">'),
+    '/q?a=1&b=2': ['image/png', 'png'],
     '/clean/a': html('<a href="/clean">back</a>'),
     '/many': html([1, 2, 3, 4, 5].map((i) => `<a href="/many/${i}">${i}</a>`).join(' ')),
   });
   for (let i = 1; i <= 5; i++) site[`/many/${i}`] = html('leaf');
-  Object.assign(ext, { '/ok': html(`<a href="${extBase}/secret">secret</a>`), '/secret': html('secret') });
+  site['/big'] = html(Array.from({ length: 120 }, (_, i) => `<a href="/big/${i}">${i}</a>`).join(' '));
+  for (let i = 0; i < 120; i++) site[`/big/${i}`] = html('leaf');
+  Object.assign(site, {
+    '/hop': `${extBase}/landing`,
+    '/docs': '/docs/',
+    '/docs/': html('<a href="intro">Intro</a> <a href="/docs/">self</a>'),
+    '/docs/intro': html('<a href="/docs">up</a>'),
+  });
+  Object.assign(ext, {
+    '/ok': html(`<a href="${extBase}/secret">secret</a>`), '/secret': html('secret'), '/landing': html('<a href="/secret">s</a>'),
+  });
 });
 after(() => servers.forEach((s) => s.close()));
 
@@ -70,6 +82,22 @@ test('maxPages caps crawled pages', async () => {
   assert.equal(result.checked, 6);
 });
 
+test('default cap is 100 pages', async () => {
+  assert.equal((await checkSite(`${base}/big`)).pages.length, 100);
+});
+
+test('start url redirecting cross-origin crawls the final origin', async () => {
+  const result = await checkSite(`${base}/hop`);
+  assert.deepEqual(result.pages, [`${extBase}/landing`, `${extBase}/secret`]);
+  assert.deepEqual(result.broken, []);
+});
+
+test('redirected pages resolve links against the final url and are crawled once', async () => {
+  const result = await checkSite(`${base}/docs`);
+  assert.deepEqual(result.pages, [`${base}/docs/`, `${base}/docs/intro`]);
+  assert.deepEqual(result.broken, []);
+});
+
 test('cli prints broken links and total, exits 1', async () => {
   const { code, stdout } = await run(`${base}/`);
   assert.equal(code, 1);
@@ -87,7 +115,7 @@ test('cli prints broken links and total, exits 1', async () => {
 test('cli exits 0 on a clean site', async () => {
   const { code, stdout } = await run(`${base}/clean`);
   assert.equal(code, 0);
-  assert.equal(stdout, '0 broken link(s) — 2 page(s) crawled, 3 link(s) checked\n');
+  assert.equal(stdout, '0 broken link(s) — 2 page(s) crawled, 4 link(s) checked\n');
 });
 
 test('cli --max-pages caps the crawl', async () => {
