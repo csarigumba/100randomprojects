@@ -1,4 +1,4 @@
-import { start, pick, next, isCorrect, isFinished, scoreText } from './quiz.js';
+import { start, pick, next, isCorrect, isFinished, scoreText, progressText, feedbackText } from './quiz.js';
 
 const $ = (selector) => document.querySelector(selector);
 let state;
@@ -11,7 +11,7 @@ function render() {
   if (done) return;
   const q = state.questions[state.index];
   const picked = state.picked !== null;
-  $('#progress').textContent = `Question ${state.index + 1} of ${state.questions.length}`;
+  $('#progress').textContent = progressText(state);
   $('#question').textContent = q.question;
   $('#choices').replaceChildren(...q.choices.map((text, i) => {
     const button = document.createElement('button');
@@ -23,7 +23,7 @@ function render() {
     if (picked && i === q.answer) button.dataset.correct = '';
     return button;
   }));
-  $('#feedback').textContent = !picked ? '' : isCorrect(state) ? 'Correct!' : `Wrong — answer: ${q.choices[q.answer]}`;
+  $('#feedback').textContent = feedbackText(state);
   $('#next').hidden = !picked;
 }
 

@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { validateQuestions, start, pick, next, isCorrect, isFinished, scoreText } from '../public/quiz.js';
+import { validateQuestions, start, pick, next, isCorrect, isFinished, scoreText, feedbackText, progressText } from '../public/quiz.js';
 
 const qs = [
   { question: 'A?', choices: ['a', 'b', 'c'], answer: 0 },
@@ -75,7 +75,13 @@ for (const [name, [data, message]] of Object.entries(bad)) {
   test(`validateQuestions rejects ${name}`, () => assert.throws(() => validateQuestions(data), message));
 }
 
-test('malformed questions file fails at JSON.parse', () => {
-  const text = readFileSync(join(import.meta.dirname, 'fixtures', 'malformed.json'), 'utf8');
-  assert.throws(() => validateQuestions(JSON.parse(text)), SyntaxError);
+test('malformed questions file is rejected by validateQuestions', () => {
+  const data = JSON.parse(readFileSync(join(import.meta.dirname, 'fixtures', 'malformed.json'), 'utf8'));
+  assert.throws(() => validateQuestions(data), /^Error: question 1: choices/);
 });
+
+test('feedbackText is empty before a pick', () => assert.equal(feedbackText(start(qs)), ''));
+test('feedbackText on right pick', () => assert.equal(feedbackText(pick(start(qs), 0)), 'Correct!'));
+test('feedbackText on wrong pick names the answer', () => assert.equal(feedbackText(pick(start(qs), 2)), 'Wrong — answer: a'));
+
+test('progressText is 1-based', () => assert.equal(progressText(next(pick(start(qs), 0))), 'Question 2 of 2'));

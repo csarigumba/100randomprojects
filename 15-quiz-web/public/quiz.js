@@ -37,3 +37,13 @@ export function isFinished(state) {
 export function scoreText(state) {
   return `${state.score} / ${state.questions.length}`;
 }
+
+export function progressText(state) {
+  return `Question ${state.index + 1} of ${state.questions.length}`;
+}
+
+export function feedbackText(state) {
+  if (state.picked === null) return '';
+  const q = state.questions[state.index];
+  return isCorrect(state) ? 'Correct!' : `Wrong — answer: ${q.choices[q.answer]}`;
+}
