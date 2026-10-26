@@ -18,11 +18,12 @@ Ready when `/tmp/uc-verify.log` prints `http://localhost:3197` and `curl -s -o /
 `kill -0 $(cat /tmp/uc-verify.pid) && lsof -nP -iTCP:3197 -sTCP:LISTEN` — the listening PID must equal the pid file. Otherwise read `/tmp/uc-verify.log`; never drive an instance you did not start.
 
 ## Drive
-Helper (executable, system Python Playwright, uses newest cached `chromium_headless_shell`; nothing to install):
+Helper needs a `python3` with the `playwright` package; it uses the newest cached `chromium_headless_shell` (macOS cache path), else Playwright's default browser. Nothing to install in the repo. On this machine the system python has it, so call it explicitly (`python3` on PATH may be Homebrew's, without playwright):
 ```
-.claude/skills/verify-unit-converter-web/drive.py http://localhost:3197/ $EVIDENCE/load.png
-.claude/skills/verify-unit-converter-web/drive.py http://localhost:3197/ $EVIDENCE/c-to-f.png temperature 100 C F
+/usr/bin/python3 .claude/skills/verify-unit-converter-web/drive.py http://localhost:3197/ $EVIDENCE/load.png
+/usr/bin/python3 .claude/skills/verify-unit-converter-web/drive.py http://localhost:3197/ $EVIDENCE/c-to-f.png temperature 100 C F
 ```
+`drive.py` below means this invocation.
 Prints JSON: `title`, `sections.<family>.from/to` option values, and in convert mode `result`, `error`, `error_visible`, `url_after`. It fills `#<f>-value`, selects `#<f>-from` / `#<f>-to`, clicks `#<f>-form button[type=submit]`, reads `#<f>-result` and `#<f>-error`. Families: `length`, `weight`, `temperature`. Recipes in `features/`.
 
 ## Evidence

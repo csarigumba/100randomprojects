@@ -5,7 +5,7 @@ Maintained source for verifying 03-unit-converter-web. Read the index, then use 
 ## Baseline preconditions
 
 - Server launched per `SKILL.md` on `http://localhost:3197`, doctor passes.
-- `drive.py` runs (system Python Playwright + cached chromium headless shell).
+- `drive.py` in recipes means `/usr/bin/python3 .claude/skills/verify-unit-converter-web/drive.py` (see `SKILL.md` Drive).
 
 ## Driving conventions
 

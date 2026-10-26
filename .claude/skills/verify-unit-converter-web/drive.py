@@ -1,4 +1,4 @@
-#!/Applications/Xcode.app/Contents/Developer/usr/bin/python3
+#!/usr/bin/env python3
 """Drive the unit converter page in headless Chromium.
 
 Load only:   drive.py URL OUT.png
@@ -9,11 +9,12 @@ import glob, json, os, sys
 from playwright.sync_api import sync_playwright
 
 url, out, *conv = sys.argv[1:]
-exe = sorted(glob.glob(os.path.expanduser(
-    '~/Library/Caches/ms-playwright/chromium_headless_shell-*/chrome-headless-shell-mac-arm64/chrome-headless-shell')))[-1]
+# Newest cached headless shell, so a playwright/browser version mismatch still runs; else playwright's default.
+exes = sorted(glob.glob(os.path.expanduser(
+    '~/Library/Caches/ms-playwright/chromium_headless_shell-*/chrome-headless-shell-*/chrome-headless-shell')))
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(executable_path=exe)
+    browser = p.chromium.launch(executable_path=exes[-1] if exes else None)
     page = browser.new_page()
     page.goto(url)
     report = {'url': page.url, 'title': page.title(), 'sections': {}}
