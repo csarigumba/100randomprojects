@@ -1,5 +1,7 @@
 // Token bucket. Levels are stored in token*ms units (1 token = windowMs) so integer clocks stay exact.
 export function createLimiter({ limit, windowMs, now = Date.now }) {
+  if (!(Number.isInteger(limit) && limit > 0)) throw new RangeError(`limit must be a positive integer, got ${limit}`);
+  if (!(Number.isInteger(windowMs) && windowMs > 0)) throw new RangeError(`windowMs must be a positive integer, got ${windowMs}`);
   const buckets = new Map(); // ponytail: never evicted, add a sweep if client count grows unbounded
   const max = limit * windowMs;
   return (key) => {
