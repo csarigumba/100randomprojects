@@ -1,13 +1,14 @@
-import { test } from 'node:test';
+import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseCsv, stats } from '../src/stats.js';
 
 const bin = join(import.meta.dirname, '..', 'bin', 'csv-stats.js');
 const dir = mkdtempSync(join(tmpdir(), 'csv stats '));
+after(() => rmSync(dir, { recursive: true, force: true }));
 const file = (name, text) => {
   const path = join(dir, name);
   writeFileSync(path, text);
@@ -50,6 +51,12 @@ test('stats: --column filter and errors', () => {
   assert.throws(() => stats(''), { message: 'empty file' });
 });
 
+test('stats: BOM stripped, blank records skipped, blank-only file is empty', () => {
+  assert.deepEqual(stats('\uFEFFname,age\nA,1\n', 'name'), ['name\ttext\tcount=1\tdistinct=1']);
+  assert.deepEqual(stats('a,b\n1,2\n\n3,4\n\n'), stats('a,b\n1,2\n3,4\n'));
+  for (const text of ['\n', '\r\n', '\uFEFF', '\n\n']) assert.throws(() => stats(text), { message: 'empty file' });
+});
+
 test('cli: prints stats and filters by --column', async () => {
   const data = file('data.csv', DATA);
   assert.deepEqual(await run(data), { code: 0, stderr: '', stdout: `${stats(DATA).join('\n')}\n` });
@@ -65,6 +72,7 @@ test('cli: errors go to stderr with exit codes', async () => {
   const missing = join(dir, 'missing.csv');
   assert.deepEqual(await run(missing), { code: 1, stdout: '', stderr: `csv-stats: cannot read ${missing}: ENOENT\n` });
   assert.deepEqual(await run(file('empty.csv', '')), { code: 1, stdout: '', stderr: 'csv-stats: empty file\n' });
+  assert.deepEqual(await run(file('blank.csv', '\r\n')), { code: 1, stdout: '', stderr: 'csv-stats: empty file\n' });
   assert.deepEqual(await run(file('bad.csv', 'a,b\n1,2\n3\n4,5\n')), { code: 1, stdout: '', stderr: 'csv-stats: line 3: expected 2 fields, got 1\n' });
   assert.deepEqual(await run(file('open.csv', 'a\n"x\n')), { code: 1, stdout: '', stderr: 'csv-stats: line 2: unterminated quote\n' });
   assert.deepEqual(await run(data, '--column', 'nope'), { code: 1, stdout: '', stderr: 'csv-stats: unknown column: nope\n' });

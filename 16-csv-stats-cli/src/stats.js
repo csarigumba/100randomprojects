@@ -1,5 +1,5 @@
 export function parseCsv(text) {
-  text = text.replace(/\r\n/g, '\n').replace(/\n$/, '');
+  text = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\n$/, '');
   const records = [];
   let fields = [], field = '', quoted = false, line = 1, start = 1;
   for (let i = 0; i < text.length; i++) {
@@ -16,7 +16,7 @@ export function parseCsv(text) {
   if (quoted) throw new Error(`line ${start}: unterminated quote`);
   fields.push(field);
   records.push({ line: start, fields });
-  return records;
+  return records.filter((r) => r.fields.length > 1 || r.fields[0] !== '');
 }
 
 function describe(name, cells) {
@@ -29,8 +29,9 @@ function describe(name, cells) {
 }
 
 export function stats(text, column) {
-  if (!text) throw new Error('empty file');
-  const [{ fields: header }, ...rows] = parseCsv(text);
+  const records = parseCsv(text);
+  if (!records.length) throw new Error('empty file');
+  const [{ fields: header }, ...rows] = records;
   for (const { line, fields } of rows) {
     if (fields.length !== header.length) throw new Error(`line ${line}: expected ${header.length} fields, got ${fields.length}`);
   }
