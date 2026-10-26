@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { UNITS, convert } from '../public/convert.js';
+import { UNITS, convert, formatConversion } from '../public/convert.js';
 
 const near = (actual, expected) =>
   assert.ok(Math.abs(actual - expected) <= 1e-9 * Math.max(1, Math.abs(expected)), `${actual} != ${expected}`);
@@ -63,4 +63,14 @@ test('throws on unknown unit', () => {
 test('throws on cross-family conversion', () => {
   assert.throws(() => convert(1, 'm', 'kg'), Error);
   assert.throws(() => convert(1, 'C', 'g'), Error);
+});
+
+test('formatConversion rejects non-numbers', () => {
+  for (const raw of ['abc', '', '  ']) assert.throws(() => formatConversion(raw, 'C', 'F'), { message: 'Enter a number' });
+});
+
+test('formatConversion formats rounded result with unit', () => {
+  assert.equal(formatConversion('-40', 'C', 'F'), '-40 F');
+  assert.equal(formatConversion('100', 'C', 'F'), '212 F');
+  assert.equal(formatConversion('1', 'ft', 'm'), '0.3048 m');
 });

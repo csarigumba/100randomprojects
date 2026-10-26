@@ -25,3 +25,8 @@ export function convert(value, from, to) {
   if (family === 'temperature') return FROM_C[to](TO_C[from](value));
   return value * FACTORS[from] / FACTORS[to];
 }
+
+export function formatConversion(raw, from, to) {
+  if (raw.trim() === '' || !Number.isFinite(Number(raw))) throw new Error('Enter a number');
+  return `${Number(convert(Number(raw), from, to).toPrecision(12))} ${to}`;
+}

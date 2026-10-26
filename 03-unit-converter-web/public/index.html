@@ -48,7 +48,7 @@
 </section>
 
 <script type="module">
-  import { UNITS, convert } from './convert.js';
+  import { UNITS, formatConversion } from './convert.js';
 
   for (const [f, units] of Object.entries(UNITS)) {
     const $ = (id) => document.getElementById(`${f}-${id}`);
@@ -56,10 +56,13 @@
     $('to').selectedIndex = 1;
     $('form').addEventListener('submit', (e) => {
       e.preventDefault();
-      const value = $('value').value;
-      const ok = value.trim() !== '' && Number.isFinite(Number(value));
-      $('error').textContent = ok ? '' : 'Enter a number';
-      $('result').textContent = ok ? `${Number(convert(Number(value), $('from').value, $('to').value).toPrecision(12))} ${$('to').value}` : '';
+      try {
+        $('result').textContent = formatConversion($('value').value, $('from').value, $('to').value);
+        $('error').textContent = '';
+      } catch (err) {
+        $('result').textContent = '';
+        $('error').textContent = err.message;
+      }
     });
   }
 </script>
