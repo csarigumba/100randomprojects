@@ -21,7 +21,7 @@ if (values['clear-cache']) {
     process.exit(1);
   }
 } else if (origin) {
-  createProxy(origin).listen(port, () => console.log(`Caching proxy listening on http://localhost:${port} -> ${origin}`));
+  createProxy(origin).listen(Number(port), () => console.log(`Caching proxy listening on http://localhost:${port} -> ${origin}`));
 } else {
   console.error('Usage: caching-proxy --port <n> --origin <url>\n       caching-proxy --clear-cache [--port <n>]');
   process.exit(1);

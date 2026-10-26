@@ -4,10 +4,12 @@ import http from 'node:http';
 import { once } from 'node:events';
 import { execFile, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
+import { fileURLToPath } from 'node:url';
+import zlib from 'node:zlib';
 import { createProxy } from '../src/proxy.js';
 
 const run = promisify(execFile);
-const bin = new URL('../bin/caching-proxy.js', import.meta.url).pathname;
+const bin = fileURLToPath(new URL('../bin/caching-proxy.js', import.meta.url));
 const hits = [];
 let origin, proxy, base;
 
@@ -15,6 +17,9 @@ before(() => {
   origin = http.createServer(async (req, res) => {
     const body = Buffer.concat(await req.toArray()).toString();
     hits.push(`${req.method} ${req.url} ${body}`);
+    if (req.url === '/partial') return res.writeHead(200, { 'content-length': '100' }).write('part', () => res.socket.destroy());
+    if (req.url === '/etag' && req.headers['if-none-match']) return res.writeHead(304).end();
+    if (req.url === '/gzip') return res.writeHead(200, { 'content-encoding': 'gzip' }).end(zlib.gzipSync('plain text'));
     res.writeHead(req.url.startsWith('/missing') ? 404 : 200, { 'content-type': 'text/plain', 'x-origin': 'yes' });
     res.end(`${req.method} ${req.url} ${body} #${hits.length}`);
   }).listen(0);
@@ -83,6 +88,27 @@ test('origin unreachable -> 502', async () => {
   assert.equal(r.status, 502);
   assert.equal(await r.text(), 'Bad Gateway');
   dead.close();
+});
+
+test('origin reset mid-body -> 502, proxy stays up', async () => {
+  const r = await fetch(`${base}/partial`);
+  assert.equal(r.status, 502);
+  assert.equal(await r.text(), 'Bad Gateway');
+  assert.equal((await fetch(`${base}/after-partial`)).status, 200);
+});
+
+test('client conditional headers are not forwarded, so 304 is never cached', async () => {
+  const a = await fetch(`${base}/etag`, { headers: { 'if-none-match': '"x"' } });
+  assert.equal(a.status, 200);
+  const b = await fetch(`${base}/etag`);
+  assert.equal(b.status, 200);
+  assert.match(await b.text(), /^GET \/etag/);
+});
+
+test('gzip origin body is decoded and content-encoding dropped', async () => {
+  const r = await fetch(`${base}/gzip`);
+  assert.equal(r.headers.get('content-encoding'), null);
+  assert.equal(await r.text(), 'plain text');
 });
 
 test('CLI --clear-cache clears running proxy', async () => {

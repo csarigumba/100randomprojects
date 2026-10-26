@@ -15,7 +15,7 @@ npm test
 
 ```
 # start: listen on --port (default 3000), forward to --origin
-caching-proxy --port 3000 --origin http://dummyjson.com
+caching-proxy --port 3000 --origin https://dummyjson.com
 curl -i localhost:3000/products/1   # X-Cache: MISS
 curl -i localhost:3000/products/1   # X-Cache: HIT
 
