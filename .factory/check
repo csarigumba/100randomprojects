@@ -1,0 +1,13 @@
+#!/bin/bash
+# Factory gate: every project folder installs cleanly and its npm test passes.
+set -euo pipefail
+for pkg in */package.json; do
+  dir=$(dirname "$pkg")
+  echo "== $dir"
+  if [ -f "$dir/package-lock.json" ]; then
+    (cd "$dir" && npm ci --no-audit --no-fund)
+  else
+    (cd "$dir" && npm install --no-audit --no-fund)
+  fi
+  (cd "$dir" && npm test)
+done

@@ -1,0 +1,4 @@
+# Paths a factory PR may not change without a human. One grep -E regex per line.
+^\.github/
+^\.claude/settings
+(^|/)\.env
