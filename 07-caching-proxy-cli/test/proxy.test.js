@@ -19,6 +19,7 @@ before(() => {
     hits.push(`${req.method} ${req.url} ${body}`);
     if (req.url === '/partial') return res.writeHead(200, { 'content-length': '100' }).write('part', () => res.socket.destroy());
     if (req.url === '/etag' && req.headers['if-none-match']) return res.writeHead(304).end();
+    if (req.url === '/range' && req.headers.range) return res.writeHead(206).end('part');
     if (req.url === '/gzip') return res.writeHead(200, { 'content-encoding': 'gzip' }).end(zlib.gzipSync('plain text'));
     res.writeHead(req.url.startsWith('/missing') ? 404 : 200, { 'content-type': 'text/plain', 'x-origin': 'yes' });
     res.end(`${req.method} ${req.url} ${body} #${hits.length}`);
@@ -103,6 +104,20 @@ test('client conditional headers are not forwarded, so 304 is never cached', asy
   const b = await fetch(`${base}/etag`);
   assert.equal(b.status, 200);
   assert.match(await b.text(), /^GET \/etag/);
+});
+
+test('POST with expect: 100-continue is forwarded', async () => {
+  const req = http.request(`${base}/expect`, { method: 'POST', headers: { expect: '100-continue' } }).end('hi');
+  const [res] = await once(req, 'response');
+  assert.equal(res.statusCode, 200);
+  assert.match(Buffer.concat(await res.toArray()).toString(), /^POST \/expect hi/);
+});
+
+test('client range header is not forwarded, so 206 is never cached', async () => {
+  await fetch(`${base}/range`, { headers: { range: 'bytes=0-3' } });
+  const r = await fetch(`${base}/range`);
+  assert.equal(r.status, 200);
+  assert.match(await r.text(), /^GET \/range/);
 });
 
 test('gzip origin body is decoded and content-encoding dropped', async () => {
