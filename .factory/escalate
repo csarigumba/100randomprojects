@@ -3,4 +3,4 @@
 ^\.github/
 ^\.claude/(settings|agents|hooks|commands)
 (^|/)(CLAUDE|AGENTS)\.md$
-(^|/)\.env
+(^|/)\.env($|\.(local|production|development|test)$)
