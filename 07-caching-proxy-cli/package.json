@@ -1,0 +1,12 @@
+{
+  "name": "caching-proxy-cli",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "caching-proxy": "bin/caching-proxy.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
