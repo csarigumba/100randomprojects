@@ -1,6 +1,6 @@
 # CSV Stats CLI
 
-Prints per-column statistics for a CSV file with a header row: one tab-separated line per column. A column whose non-empty cells are all numbers gets count, min, max, and mean (rounded to 2 decimals); any other column is text and gets count and distinct values. Empty cells are not counted. Parses RFC 4180 CSV (quoted commas, `""` escapes, quoted newlines, CRLF). Zero dependencies. Needs Node 24+.
+Prints per-column statistics for a CSV file with a header row: one tab-separated line per column. A column whose non-empty cells are all numbers gets count, min, max, and mean (rounded to 2 decimals); any other column is text and gets count and distinct values. Empty cells are not counted. Parses RFC 4180 CSV (quoted commas, `""` escapes, quoted newlines, CRLF); a UTF-8 BOM and blank lines are ignored. Zero dependencies. Needs Node 24+.
 
 ## Run
 
