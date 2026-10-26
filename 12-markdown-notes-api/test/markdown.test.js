@@ -49,3 +49,9 @@ test('CRLF input and empty string', () => {
   assert.equal(render('# Hi\r\n\r\n- a\r\n- b\r\n'), '<h1>Hi</h1>\n<ul><li>a</li><li>b</li></ul>');
   assert.equal(render(''), '');
 });
+
+test('pathological input renders in linear time', () => {
+  const start = performance.now();
+  for (const d of ['*a ', '**a ', '_a ', '[', '[a](', '`', '`a']) render(d.repeat(20000));
+  assert.ok(performance.now() - start < 1000);
+});
