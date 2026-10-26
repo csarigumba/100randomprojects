@@ -4,6 +4,7 @@ const dropped = ['content-encoding', 'content-length', 'transfer-encoding', 'con
 
 export function createProxy(origin) {
   const cache = new Map();
+  origin = origin.replace(/\/$/, '');
 
   return http.createServer(async (req, res) => {
     if (req.method === 'POST' && req.url === '/__cache/clear') {
@@ -18,24 +19,28 @@ export function createProxy(origin) {
 
     // transfer-encoding is dropped too: fetch rejects it, and the body is buffered anyway
     const { host, 'transfer-encoding': _, ...headers } = req.headers;
-    const body = Buffer.concat(await req.toArray());
-    let upstream;
+    if (isGet) {
+      delete headers['if-none-match'];
+      delete headers['if-modified-since'];
+    }
+    let entry;
     try {
-      upstream = await fetch(origin + req.url, {
+      const body = Buffer.concat(await req.toArray());
+      const upstream = await fetch(origin + req.url, {
         method: req.method,
         headers,
         body: body.length ? body : undefined,
         redirect: 'manual',
       });
+      entry = {
+        status: upstream.status,
+        headers: Object.fromEntries([...upstream.headers].filter(([k]) => !dropped.includes(k))),
+        body: Buffer.from(await upstream.arrayBuffer()),
+      };
     } catch {
       return res.writeHead(502).end('Bad Gateway');
     }
 
-    const entry = {
-      status: upstream.status,
-      headers: Object.fromEntries([...upstream.headers].filter(([k]) => !dropped.includes(k))),
-      body: Buffer.from(await upstream.arrayBuffer()),
-    };
     if (!isGet) return res.writeHead(entry.status, entry.headers).end(entry.body);
     cache.set(req.url, entry);
     res.writeHead(entry.status, { ...entry.headers, 'x-cache': 'MISS' }).end(entry.body);
