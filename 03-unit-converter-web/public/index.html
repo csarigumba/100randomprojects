@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Unit converter</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; }
+  [role=alert] { color: #b00020; }
+</style>
+</head>
+<body>
+<h1>Unit converter</h1>
+
+<section id="length">
+  <h2>Length</h2>
+  <form id="length-form">
+    <label for="length-value">Value</label> <input id="length-value" name="value" type="text" inputmode="decimal">
+    <label for="length-from">From</label> <select id="length-from"></select>
+    <label for="length-to">To</label> <select id="length-to"></select>
+    <button type="submit">Convert</button>
+  </form>
+  <output id="length-result"></output>
+  <p id="length-error" role="alert"></p>
+</section>
+
+<section id="weight">
+  <h2>Weight</h2>
+  <form id="weight-form">
+    <label for="weight-value">Value</label> <input id="weight-value" name="value" type="text" inputmode="decimal">
+    <label for="weight-from">From</label> <select id="weight-from"></select>
+    <label for="weight-to">To</label> <select id="weight-to"></select>
+    <button type="submit">Convert</button>
+  </form>
+  <output id="weight-result"></output>
+  <p id="weight-error" role="alert"></p>
+</section>
+
+<section id="temperature">
+  <h2>Temperature</h2>
+  <form id="temperature-form">
+    <label for="temperature-value">Value</label> <input id="temperature-value" name="value" type="text" inputmode="decimal">
+    <label for="temperature-from">From</label> <select id="temperature-from"></select>
+    <label for="temperature-to">To</label> <select id="temperature-to"></select>
+    <button type="submit">Convert</button>
+  </form>
+  <output id="temperature-result"></output>
+  <p id="temperature-error" role="alert"></p>
+</section>
+
+<script type="module">
+  import { UNITS, formatConversion } from './convert.js';
+
+  for (const [f, units] of Object.entries(UNITS)) {
+    const $ = (id) => document.getElementById(`${f}-${id}`);
+    for (const sel of [$('from'), $('to')]) sel.append(...units.map((u) => new Option(u, u)));
+    $('to').selectedIndex = 1;
+    $('form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      try {
+        $('result').textContent = formatConversion($('value').value, $('from').value, $('to').value);
+        $('error').textContent = '';
+      } catch (err) {
+        $('result').textContent = '';
+        $('error').textContent = err.message;
+      }
+    });
+  }
+</script>
+</body>
+</html>
