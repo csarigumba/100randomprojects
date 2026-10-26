@@ -4,7 +4,7 @@ import http from 'node:http';
 import { execFile } from 'node:child_process';
 import { checkSite } from '../src/check.js';
 
-const bin = new URL('../bin/link-check.js', import.meta.url).pathname;
+const bin = `${import.meta.dirname}/../bin/link-check.js`;
 const requests = [];
 const html = (body) => ['text/html; charset=utf-8', `<!doctype html>${body}`];
 const site = {};
@@ -49,6 +49,8 @@ before(async () => {
     '/docs': '/docs/',
     '/docs/': html('<a href="intro">Intro</a> <a href="/docs/">self</a>'),
     '/docs/intro': html('<a href="/docs">up</a>'),
+    '/loop': '/loop',
+    '/looper': html('<a href="/loop">loop</a>'),
   });
   Object.assign(ext, {
     '/ok': html(`<a href="${extBase}/secret">secret</a>`), '/secret': html('secret'), '/landing': html('<a href="/secret">s</a>'),
@@ -96,6 +98,12 @@ test('redirected pages resolve links against the final url and are crawled once'
   const result = await checkSite(`${base}/docs`);
   assert.deepEqual(result.pages, [`${base}/docs/`, `${base}/docs/intro`]);
   assert.deepEqual(result.broken, []);
+});
+
+test('fetch errors without a cause code report the cause message', async () => {
+  const [entry] = (await checkSite(`${base}/looper`)).broken;
+  assert.equal(entry.url, `${base}/loop`);
+  assert.match(entry.error, /redirect/i);
 });
 
 test('cli prints broken links and total, exits 1', async () => {

@@ -31,7 +31,7 @@ export async function checkSite(startUrl, { maxPages = 100 } = {}) {
         if (crawl) queue.push([res.url, await res.text()]);
         else await res.body?.cancel();
       } catch (err) {
-        result = { error: err.cause?.code ?? err.message };
+        result = { error: err.cause?.code ?? err.cause?.message ?? err.message };
       }
       results.set(url, result);
     }
