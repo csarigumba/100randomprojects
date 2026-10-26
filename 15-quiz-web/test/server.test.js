@@ -36,6 +36,12 @@ test('unknown path is 404', async () => {
   assert.equal((await fetch(`${base}/nope`)).status, 404);
 });
 
+test('non-GET method is 404 on every route', async () => {
+  for (const path of ['/', '/questions.json']) {
+    assert.equal((await fetch(base + path, { method: 'POST' })).status, 404, path);
+  }
+});
+
 test('loadQuestions throws on invalid JSON and on malformed questions', () => {
   const dir = mkdtempSync(join(tmpdir(), 'quiz-'));
   writeFileSync(join(dir, 'bad.json'), '[{');
