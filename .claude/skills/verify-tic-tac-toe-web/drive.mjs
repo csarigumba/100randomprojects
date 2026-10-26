@@ -73,8 +73,9 @@ try {
 } catch (err) {
   console.log(`FAIL ${err.message}`); code = 1;
 } finally {
+  const exited = new Promise((r) => chrome.exitCode !== null ? r() : chrome.once('exit', r));
   chrome.kill();
-  await sleep(300);
+  await exited; // Chrome writes to its profile until it exits
   rmSync(profile, { recursive: true, force: true });
 }
 process.exit(code);
