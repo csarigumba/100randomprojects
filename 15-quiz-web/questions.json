@@ -1,0 +1,8 @@
+[
+  { "question": "What is the capital of France?", "choices": ["Berlin", "Paris", "Madrid", "Rome"], "answer": 1 },
+  { "question": "How many legs does a spider have?", "choices": ["6", "8", "10"], "answer": 1 },
+  { "question": "Which planet is known as the Red Planet?", "choices": ["Venus", "Jupiter", "Mars", "Saturn"], "answer": 2 },
+  { "question": "What is 7 × 6?", "choices": ["42", "36", "48"], "answer": 0 },
+  { "question": "Which gas do plants absorb from the air?", "choices": ["Oxygen", "Nitrogen", "Helium", "Carbon dioxide"], "answer": 3 },
+  { "question": "What is the boiling point of water at sea level in °C?", "choices": ["90", "100", "110"], "answer": 1 }
+]
