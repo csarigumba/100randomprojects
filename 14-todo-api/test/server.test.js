@@ -110,6 +110,15 @@ test('list filters by done and paginates', async (t) => {
   }
 });
 
+test('query params matching prototype keys return 400', async (t) => {
+  const { req } = await start(t);
+  for (const q of ['?done=null', '?done=toString', '?done=__proto__', '?done=constructor', '?page=constructor', '?limit=toString']) {
+    const res = await req(`/todos${q}`);
+    assert.equal(res.status, 400, q);
+    assert.equal(typeof (await res.json()).error, 'string');
+  }
+});
+
 test('unknown routes and non-integer ids return 404', async (t) => {
   const { req } = await start(t);
   for (const [method, path] of [['GET', '/'], ['GET', '/todos/1'], ['PUT', '/todos'], ['DELETE', '/todos'], ['PATCH', '/todos/abc'], ['DELETE', '/todos/1.5'], ['DELETE', '/todos/0'], ['POST', '/todos/1'], ['GET', '/todos/x/y']]) {

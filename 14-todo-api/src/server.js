@@ -56,7 +56,8 @@ export function build({ dbPath = process.env.DB_PATH || 'todos.db' } = {}) {
       }
       if (m === 'GET' && url.pathname === '/todos') {
         const q = url.searchParams;
-        const done = { true: 1, false: 0, null: null }[q.get('done')];
+        const d = q.get('done');
+        const done = d === null ? null : d === 'true' ? 1 : d === 'false' ? 0 : undefined;
         const page = intParam(q.get('page'), 1);
         const limit = intParam(q.get('limit'), 10);
         if (done === undefined) return send(400, { error: 'done must be true or false' });
@@ -80,8 +81,7 @@ export function build({ dbPath = process.env.DB_PATH || 'todos.db' } = {}) {
       }
       notFound();
     } catch {
-      if (!res.headersSent) send(500, { error: 'Internal server error' });
-      else res.destroy();
+      send(500, { error: 'Internal server error' });
     }
   });
   server.on('close', () => db.close());
