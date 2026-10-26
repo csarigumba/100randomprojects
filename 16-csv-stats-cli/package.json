@@ -1,0 +1,13 @@
+{
+  "name": "csv-stats-cli",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "bin": {
+    "csv-stats": "bin/csv-stats.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
