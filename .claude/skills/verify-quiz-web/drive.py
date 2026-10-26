@@ -23,7 +23,7 @@ def state(page):
             choices: [...document.querySelectorAll('#choices .choice')].map(b => ({
                 index: +b.dataset.index, text: b.textContent, disabled: b.disabled,
                 result: b.dataset.result ?? null, correct: b.hasAttribute('data-correct')})),
-            feedback: $('#feedback').textContent, next_visible: !$('#next').hidden,
+            feedback: $('#feedback').textContent, next_visible: !$('#next').hidden && !$('#quiz').hidden,
             score: $('#score').textContent, restart_visible: !$('#restart').hidden && !$('#result').hidden,
         };
     }""")
