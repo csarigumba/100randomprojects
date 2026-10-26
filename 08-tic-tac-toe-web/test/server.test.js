@@ -1,5 +1,6 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { connect } from 'node:net';
 import { server } from '../src/server.js';
 
 let base;
@@ -27,3 +28,13 @@ for (const path of ['/nope', '/../package.json']) {
     assert.equal(res.status, 404);
   });
 }
+
+test('malformed request target gets 4xx and server stays up', async () => {
+  const reply = await new Promise((resolve, reject) => {
+    let data = '';
+    const sock = connect(server.address().port, 'localhost', () => sock.end('GET http://[ HTTP/1.1\r\nHost: x\r\n\r\n'));
+    sock.on('data', (d) => (data += d)).on('end', () => resolve(data)).on('error', reject);
+  });
+  assert.match(reply, /^HTTP\/1\.1 4\d\d/);
+  assert.equal((await fetch(`${base}/`)).status, 200);
+});

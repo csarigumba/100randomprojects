@@ -6,3 +6,11 @@ export function outcome(board) {
   }
   return board.every(Boolean) ? 'draw' : null;
 }
+
+export function turn(board) {
+  return board.filter(Boolean).length % 2 ? 'O' : 'X';
+}
+
+export function canPlay(board, i) {
+  return !board[i] && outcome(board) === null;
+}
