@@ -7,3 +7,13 @@ From project 2 on, `/sidstack:factory` runs the board: each project is a GitHub 
 | # | project | folder |
 |---|---|---|
 | 1 | Personal blogging platform API | `01-blogging-platform-api/` |
+| 2 | Task tracker CLI | `02-task-tracker-cli/` |
+| 3 | Unit converter web page | `03-unit-converter-web/` |
+| 4 | URL shortener API | `04-url-shortener-api/` |
+| 5 | Expense tracker CLI | `05-expense-tracker-cli/` |
+| 6 | Number guessing game CLI | `06-number-guessing-cli/` |
+| 7 | Caching proxy server | `07-caching-proxy-cli/` |
+| 8 | Tic-tac-toe web game | `08-tic-tac-toe-web/` |
+| 9 | Rate-limited API | `09-rate-limited-api/` |
+| 10 | Kanban board web app | `10-kanban-board-web/` |
+| 11 | Broken link checker CLI | `11-broken-link-checker-cli/` |
