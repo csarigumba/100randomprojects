@@ -17,11 +17,13 @@ export function createProxy(origin) {
     const cached = isGet && cache.get(req.url);
     if (cached) return res.writeHead(cached.status, { ...cached.headers, 'x-cache': 'HIT' }).end(cached.body);
 
-    // transfer-encoding is dropped too: fetch rejects it, and the body is buffered anyway
-    const { host, 'transfer-encoding': _, ...headers } = req.headers;
+    // host comes from origin; fetch rejects the rest
+    const headers = { ...req.headers };
+    for (const h of ['host', 'transfer-encoding', 'expect', 'keep-alive', 'upgrade']) delete headers[h];
     if (isGet) {
       delete headers['if-none-match'];
       delete headers['if-modified-since'];
+      delete headers.range;
     }
     let entry;
     try {
