@@ -1,11 +1,11 @@
 const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 
 const emphasis = (s) => s
-  .replace(/\*\*(?!\s)(.+?)(?<!\s)\*\*/g, '<strong>$1</strong>')
-  .replace(/\*(?![\s*])(.+?)(?<![\s*])\*|(?<!\w)_(?!\s)(.+?)(?<!\s)_(?!\w)/g, (_, a, b) => `<em>${a ?? b}</em>`);
+  .replace(/\*\*(?!\s)((?:[^*\n]|\*(?!\*))+?)(?<!\s)\*\*/g, '<strong>$1</strong>')
+  .replace(/\*(?![\s*])([^*\n]+?)(?<![\s*])\*|(?<!\w)_(?!\s)([^_\n]+?)(?<!\s)_(?!\w)/g, (_, a, b) => `<em>${a ?? b}</em>`);
 
 // Code spans and links are split out first so emphasis never touches code or URLs.
-const inline = (s) => s.split(/(`[^`]+`|\[[^\]]+\]\([^)\s]+\))/).map((part, i) => {
+const inline = (s) => s.split(/(`[^`]+`|\[[^[\]]+\]\([^)\s[]+\))/).map((part, i) => {
   if (i % 2 === 0) return emphasis(part);
   if (part[0] === '`') return `<code>${part.slice(1, -1)}</code>`;
   const [, text, url] = part.match(/^\[(.+)\]\((.+)\)$/);
