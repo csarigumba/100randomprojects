@@ -1,8 +1,8 @@
 const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 
 const emphasis = (s) => s
-  .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-  .replace(/\*(.+?)\*|_(.+?)_/g, (_, a, b) => `<em>${a ?? b}</em>`);
+  .replace(/\*\*(?!\s)(.+?)(?<!\s)\*\*/g, '<strong>$1</strong>')
+  .replace(/\*(?![\s*])(.+?)(?<![\s*])\*|(?<!\w)_(?!\s)(.+?)(?<!\s)_(?!\w)/g, (_, a, b) => `<em>${a ?? b}</em>`);
 
 // Code spans and links are split out first so emphasis never touches code or URLs.
 const inline = (s) => s.split(/(`[^`]+`|\[[^\]]+\]\([^)\s]+\))/).map((part, i) => {
