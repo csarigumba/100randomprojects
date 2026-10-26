@@ -1,0 +1,12 @@
+{
+  "name": "broken-link-checker-cli",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "link-check": "bin/link-check.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
