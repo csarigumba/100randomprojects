@@ -14,3 +14,8 @@ export function turn(board) {
 export function canPlay(board, i) {
   return !board[i] && outcome(board) === null;
 }
+
+export function statusText(board) {
+  const result = outcome(board);
+  return result === 'draw' ? 'Draw' : result ? `Winner: ${result}` : `Turn: ${turn(board)}`;
+}

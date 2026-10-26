@@ -1,4 +1,4 @@
-import { outcome, turn, canPlay } from './game.js';
+import { turn, canPlay, statusText } from './game.js';
 
 const cells = [...document.querySelectorAll('#board button')];
 const status = document.querySelector('#status');
@@ -11,8 +11,7 @@ function restart() {
 
 function render() {
   cells.forEach((cell, i) => (cell.textContent = board[i] ?? ''));
-  const result = outcome(board);
-  status.textContent = result === 'draw' ? 'Draw' : result ? `Winner: ${result}` : `Turn: ${turn(board)}`;
+  status.textContent = statusText(board);
 }
 
 document.querySelector('#board').addEventListener('click', (e) => {
