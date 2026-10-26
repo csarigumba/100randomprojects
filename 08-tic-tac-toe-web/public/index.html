@@ -1,5 +1,21 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><title>Tic-tac-toe</title></head>
-<body><h1>Tic-tac-toe</h1></body>
+<head>
+<meta charset="utf-8"><title>Tic-tac-toe</title>
+<style>
+  #board { display: grid; grid-template-columns: repeat(3, 4rem); gap: 4px; }
+  #board button { height: 4rem; font-size: 2rem; }
+</style>
+</head>
+<body>
+<h1>Tic-tac-toe</h1>
+<p id="status"></p>
+<div id="board">
+  <button data-index="0"></button><button data-index="1"></button><button data-index="2"></button>
+  <button data-index="3"></button><button data-index="4"></button><button data-index="5"></button>
+  <button data-index="6"></button><button data-index="7"></button><button data-index="8"></button>
+</div>
+<p><button id="restart">Restart</button></p>
+<script type="module" src="/app.js"></script>
+</body>
 </html>
