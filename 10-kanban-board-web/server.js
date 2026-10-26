@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises';
 // ponytail: fixed file map instead of a static-dir walker; no path traversal possible.
 const files = {
   '/': ['index.html', 'text/html; charset=utf-8'],
+  '/app.js': ['app.js', 'text/javascript; charset=utf-8'],
+  '/board.js': ['board.js', 'text/javascript; charset=utf-8'],
 };
 
 export const server = createServer(async (req, res) => {
