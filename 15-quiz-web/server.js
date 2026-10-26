@@ -20,6 +20,7 @@ export function loadQuestions(path) {
 
 export const server = createServer(async (req, res) => {
   try {
+    if (req.method !== 'GET') return res.writeHead(404).end('Not found');
     const path = new URL(req.url, 'http://x').pathname;
     if (path === '/questions.json') {
       questions ??= loadQuestions(file);

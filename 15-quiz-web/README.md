@@ -33,7 +33,7 @@ npm test               # node --test: unit + server integration tests, no networ
   `curl -i http://localhost:3000/quiz.js` → `200`, `content-type: text/javascript; charset=utf-8`
 - `GET /questions.json` returns the validated questions (`application/json`):
   `curl -s http://localhost:3000/questions.json` → `[{"question":"What is the capital of France?","choices":["Berlin","Paris","Madrid","Rome"],"answer":1},...]`
-- Any other path → `404`.
+- Any other path or method → `404`.
 
 ## Usage
 
