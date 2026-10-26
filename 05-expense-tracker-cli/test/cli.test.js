@@ -4,8 +4,9 @@ import { spawnSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const bin = new URL('../bin/expense-tracker.js', import.meta.url).pathname;
+const bin = fileURLToPath(new URL('../bin/expense-tracker.js', import.meta.url));
 let dir, file;
 
 beforeEach(() => {
