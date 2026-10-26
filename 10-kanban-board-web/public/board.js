@@ -4,6 +4,14 @@ export function emptyBoard() {
   return { todo: [], doing: [], done: [] };
 }
 
+export function parseBoard(raw) {
+  try {
+    const b = JSON.parse(raw);
+    if (b && COLUMNS.every((c) => Array.isArray(b[c]))) return b;
+  } catch {}
+  return emptyBoard();
+}
+
 export function addCard(board, title, id = crypto.randomUUID()) {
   if (typeof title !== 'string' || !title.trim()) throw new Error('Title is required');
   return { ...board, todo: [...board.todo, { id, title: title.trim() }] };
