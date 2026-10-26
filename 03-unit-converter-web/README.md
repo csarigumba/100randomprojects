@@ -4,7 +4,7 @@ A single web page that converts length (mm, cm, m, km, in, ft, yd, mi), weight (
 
 ## Run
 
-Requires Node 24+.
+Requires Node 24.2+.
 
 ```sh
 npm start              # http://localhost:3000
