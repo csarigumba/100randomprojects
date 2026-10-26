@@ -1,6 +1,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
+import { connect } from 'node:net';
 import { server } from '../server.js';
 
 let base;
@@ -34,5 +35,16 @@ for (const path of ['/app.js', '/board.js']) {
 test('unknown path is 404', async () => {
   const res = await fetch(`${base}/nope`);
   assert.equal(res.status, 404);
+  await res.text();
+});
+
+test('malformed absolute request target is 404 and server keeps serving', async () => {
+  const sock = connect(server.address().port);
+  sock.end('GET http://a:b:c/ HTTP/1.1\r\nHost: x\r\nConnection: close\r\n\r\n');
+  let raw = '';
+  for await (const chunk of sock) raw += chunk;
+  assert.match(raw, /^HTTP\/1\.1 404/);
+  const res = await fetch(`${base}/`);
+  assert.equal(res.status, 200);
   await res.text();
 });

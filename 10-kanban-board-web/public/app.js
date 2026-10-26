@@ -1,7 +1,7 @@
-import { COLUMNS, emptyBoard, addCard, moveCard, deleteCard } from './board.js';
+import { COLUMNS, parseBoard, addCard, moveCard, deleteCard } from './board.js';
 
 const KEY = 'kanban-board';
-let board = JSON.parse(localStorage.getItem(KEY)) ?? emptyBoard();
+let board = parseBoard(localStorage.getItem(KEY));
 
 function update(next) {
   board = next;
