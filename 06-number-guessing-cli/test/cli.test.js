@@ -3,9 +3,10 @@ import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
 import { once } from 'node:events';
 import { setTimeout } from 'node:timers/promises';
+import { fileURLToPath } from 'node:url';
 import { secretFromSeed } from '../src/game.js';
 
-const cli = new URL('../src/cli.js', import.meta.url).pathname;
+const cli = fileURLToPath(new URL('../src/cli.js', import.meta.url));
 const run = (seed, lines) =>
   spawnSync(process.execPath, [cli], {
     input: lines.map((l) => l + '\n').join(''),
