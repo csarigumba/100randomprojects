@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Quiz</title>
+<style>
+  .choice { display: block; margin: 4px 0; min-width: 12rem; text-align: left; }
+  .choice[data-result="right"], .choice[data-correct] { background: #b7e4b7; }
+  .choice[data-result="wrong"] { background: #f2b8b8; }
+</style>
+</head>
+<body>
+<h1>Quiz</h1>
+<section id="quiz" hidden>
+  <p id="progress"></p>
+  <h2 id="question"></h2>
+  <div id="choices"></div>
+  <p id="feedback"></p>
+  <button id="next" hidden>Next</button>
+</section>
+<section id="result" hidden>
+  <p>Score: <span id="score"></span></p>
+  <button id="restart">Restart</button>
+</section>
+<p id="error" hidden></p>
+<script type="module" src="/app.js"></script>
+</body>
+</html>
