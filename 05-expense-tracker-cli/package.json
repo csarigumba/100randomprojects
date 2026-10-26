@@ -1,0 +1,12 @@
+{
+  "name": "expense-tracker-cli",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "expense-tracker": "bin/expense-tracker.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
