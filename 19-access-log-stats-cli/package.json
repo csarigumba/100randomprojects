@@ -1,0 +1,13 @@
+{
+  "name": "access-log-stats-cli",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "bin": {
+    "log-stats": "bin/log-stats.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
