@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>25:00 · Work</title>
+<style>
+  body { font-family: sans-serif; text-align: center; }
+  #time { font-size: 5rem; margin: 1rem 0; }
+  #mode[data-mode="work"] { color: #b33; }
+  #mode[data-mode="short"], #mode[data-mode="long"] { color: #282; }
+</style>
+</head>
+<body>
+<h1>Pomodoro</h1>
+<p id="mode" data-mode="work">Work</p>
+<p id="time">25:00</p>
+<p>Completed: <span id="count">0</span></p>
+<button id="start">Start</button>
+<button id="pause" disabled>Pause</button>
+<button id="reset">Reset</button>
+<script type="module" src="/app.js"></script>
+</body>
+</html>
