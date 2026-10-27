@@ -20,6 +20,8 @@ before(() => {
     if (req.url === '/partial') return res.writeHead(200, { 'content-length': '100' }).write('part', () => res.socket.destroy());
     if (req.url === '/etag' && req.headers['if-none-match']) return res.writeHead(304).end();
     if (req.url === '/range' && req.headers.range) return res.writeHead(206).end('part');
+    if (req.url === '/if-match' && req.headers['if-match']) return res.writeHead(412).end();
+    if (req.url === '/if-unmodified-since' && req.headers['if-unmodified-since']) return res.writeHead(412).end();
     if (req.url === '/gzip') return res.writeHead(200, { 'content-encoding': 'gzip' }).end(zlib.gzipSync('plain text'));
     res.writeHead(req.url.startsWith('/missing') ? 404 : 200, { 'content-type': 'text/plain', 'x-origin': 'yes' });
     res.end(`${req.method} ${req.url} ${body} #${hits.length}`);
@@ -118,6 +120,20 @@ test('client range header is not forwarded, so 206 is never cached', async () =>
   const r = await fetch(`${base}/range`);
   assert.equal(r.status, 200);
   assert.match(await r.text(), /^GET \/range/);
+});
+
+test('client if-match header is not forwarded, so 412 is never cached', async () => {
+  await fetch(`${base}/if-match`, { headers: { 'if-match': '"stale"' } });
+  const r = await fetch(`${base}/if-match`);
+  assert.equal(r.status, 200);
+  assert.match(await r.text(), /^GET \/if-match/);
+});
+
+test('client if-unmodified-since header is not forwarded, so 412 is never cached', async () => {
+  await fetch(`${base}/if-unmodified-since`, { headers: { 'if-unmodified-since': 'Thu, 01 Jan 1970 00:00:00 GMT' } });
+  const r = await fetch(`${base}/if-unmodified-since`);
+  assert.equal(r.status, 200);
+  assert.match(await r.text(), /^GET \/if-unmodified-since/);
 });
 
 test('gzip origin body is decoded and content-encoding dropped', async () => {
