@@ -43,7 +43,8 @@ test('toTime: valid ISO dates, offsets, and rejects', () => {
   assert.equal(toTime('2026-10-11T09:00:05.250-01:30'), Date.UTC(2026, 9, 11, 10, 30, 5, 250));
   assert.equal(toTime('2024-02-29'), Date.UTC(2024, 1, 29));
   for (const bad of ['', 'yesterday', '10/11/2026', '2026-13-01', '2026-00-10', '2026-02-30', '2026-02-29', '2026-04-31', '2026-10-00',
-    '2026-10-11T24:00Z', '2026-10-11T09:60Z', '2026-10-11T09:00:61Z', '2026-10-11T09:00+25:00', '2026-10-11 09:00Z', '2026-1-1', '2026-10-11Z']) {
+    '2026-10-11T24:00Z', '2026-10-11T09:60Z', '2026-10-11T09:00:61Z', '2026-10-11T09:00+25:00', '2026-10-11 09:00Z', '2026-1-1', '2026-10-11Z',
+    '2026-10-11T09:00', '2026-10-11T09:00:05']) {
     assert.ok(Number.isNaN(toTime(bad)), bad);
   }
 });
@@ -99,6 +100,8 @@ test('cli: --since', async () => {
   for (const d of ['yesterday', '2026-13-01', '2026-02-30', '10/11/2026', '']) {
     assert.deepEqual(await run([log, `--since=${d}`]), { code: 1, stdout: '', stderr: `log-stats: --since must be an ISO date, got ${d}\n` });
   }
+  assert.deepEqual(await run([log, '--since', '2026-10-11T09:00']), { code: 1, stdout: '',
+    stderr: 'log-stats: --since must be an ISO date, got 2026-10-11T09:00\n' });
 });
 
 test('cli: usage and unreadable file errors', async () => {

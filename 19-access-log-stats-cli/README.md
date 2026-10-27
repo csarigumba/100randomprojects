@@ -10,7 +10,7 @@ node bin/log-stats.js <file> [--top N] [--since <ISO date>]
 npm test
 ```
 
-Output is tab-separated. `--top N` shows N paths instead of 5 (N must be a positive integer). `--since` counts only requests at or after that instant; lines before it count nowhere. It takes `YYYY-MM-DD` (midnight UTC) optionally followed by `THH:MM[:SS[.sss]]` and `Z` or `±HH:MM`. Every error prints one line on stderr and exits 1.
+Output is tab-separated. `--top N` shows N paths instead of 5 (N must be a positive integer). `--since` counts only requests at or after that instant; lines before it count nowhere. It takes `YYYY-MM-DD` (midnight UTC) optionally followed by `THH:MM[:SS[.sss]]` plus a required zone, `Z` or `±HH:MM` (a time without a zone is rejected). Every error prints one line on stderr and exits 1.
 
 ## Examples
 
