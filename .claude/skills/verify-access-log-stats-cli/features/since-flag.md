@@ -3,7 +3,8 @@
 ## Sub-features
 - Counts only requests whose timestamp is at or after the given instant; earlier lines count nowhere. Skipped lines still count as skipped.
 - CLF offsets are honored (`+0200` is two hours ahead of UTC).
-- Invalid date (`yesterday`, `2026-13-01`, `10/11/2026`, empty): stderr `log-stats: --since must be an ISO date, got <value>`, exit 1, empty stdout.
+- Date-only (`2026-10-11`) means midnight UTC. A time needs a zone (`Z` or `±HH:MM`).
+- Invalid date (`yesterday`, `2026-13-01`, `2026-02-30`, `10/11/2026`, zone-less `2026-10-11T09:00`, empty): stderr `log-stats: --since must be an ISO date, got <value>`, exit 1, empty stdout.
 
 ## How to get to it (user POV)
 `log-stats access.log --since 2026-10-11T09:00:05Z`.
@@ -13,7 +14,7 @@
 FX=.claude/skills/verify-access-log-stats-cli/fixtures
 log-stats $FX/access.log --since 2026-10-11T09:00:05Z; echo "exit=$?"
 log-stats $FX/access.log --since 2026-10-12T07:00:00Z; echo "exit=$?"
-for d in yesterday 2026-13-01 10/11/2026; do log-stats $FX/access.log --since $d; echo "exit=$?"; done
+for d in yesterday 2026-13-01 2026-02-30 10/11/2026 2026-10-11T09:00; do log-stats $FX/access.log --since $d; echo "exit=$?"; done
 ```
 Expected first run, exit 0:
 ```
