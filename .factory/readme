@@ -1,0 +1,22 @@
+#!/bin/bash
+# Regenerates the project table in README.md between the factory:index markers, one row per numbered
+# folder. A row's title is kept if the table already has one, else taken from the ticket that built the
+# folder ("<folder>: <title>"), else from the folder's README heading.
+set -euo pipefail
+titles=$(gh issue list --state closed --limit 500 --json title --jq '.[].title' 2>/dev/null || true)
+rows=""
+for d in [0-9][0-9]-*/; do
+  d=${d%/}
+  t=$(awk -F' \\| ' -v f="\`$d/\`" '$3 == f " |" {print $2; exit}' README.md)
+  [ -n "$t" ] || t=$(printf '%s\n' "$titles" | awk -v p="$d: " 'index($0, p) == 1 {print substr($0, length(p) + 1); exit}')
+  [ -n "$t" ] || t=$(sed -n 's/^# //p' "$d/README.md" | head -n1)
+  rows="$rows| $((10#${d%%-*})) | ${t:-$d} | \`$d/\` |"$'\n'
+done
+tmp=$(mktemp)
+ROWS=$rows awk '
+  /<!-- factory:index:end -->/ {skip = 0}
+  !skip {print}
+  /<!-- factory:index:start -->/ {skip = 1; print "| # | project | folder |"; print "|---|---|---|"; printf "%s", ENVIRON["ROWS"]}
+' README.md > "$tmp"
+cat "$tmp" > README.md
+rm -f "$tmp"
