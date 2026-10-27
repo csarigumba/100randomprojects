@@ -94,19 +94,21 @@ test('list filters by tag and text, tags counts usage', async (t) => {
   await post({ url: 'https://deno.land', title: 'Deno', tags: ['js'] });
   await post({ url: 'https://example.com/NODE-guide', title: 'Guide', tags: ['docs', 'python'] });
   await post({ url: 'https://a.com', title: 'Untagged' });
+  await post({ url: 'https://cafe.example', title: 'CAFÉ' });
   const titles = async (q) => {
     const res = await req(`/bookmarks${q}`);
     assert.equal(res.status, 200, q);
     assert.equal(res.headers.get('content-type'), 'application/json');
     return (await res.json()).map((b) => b.title);
   };
-  assert.deepEqual(await titles(''), ['Node.js', 'Deno', 'Guide', 'Untagged']);
+  assert.deepEqual(await titles(''), ['Node.js', 'Deno', 'Guide', 'Untagged', 'CAFÉ']);
   assert.deepEqual(await titles('?tag=js'), ['Node.js', 'Deno']);
   assert.deepEqual(await titles('?tag=JS'), []);
   assert.deepEqual(await titles('?tag=nope'), []);
   assert.deepEqual(await titles('?q=NODE'), ['Node.js', 'Guide']);
   assert.deepEqual(await titles('?q=deno.LAND'), ['Deno']);
   assert.deepEqual(await titles('?q=%25'), []);
+  assert.deepEqual(await titles(`?q=${encodeURIComponent('café')}`), ['CAFÉ']);
   assert.deepEqual(await titles('?q=node&tag=docs'), ['Node.js', 'Guide']);
   assert.deepEqual(await titles('?q=node&tag=js'), ['Node.js']);
 

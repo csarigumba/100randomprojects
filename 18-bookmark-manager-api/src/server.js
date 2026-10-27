@@ -11,7 +11,7 @@ const toUrl = (v) => {
   const u = typeof v === 'string' ? URL.parse(v) : null;
   return u && (u.protocol === 'http:' || u.protocol === 'https:') ? u.href : undefined;
 };
-const toBookmark = (row) => row && { ...row, tags: JSON.parse(row.tags) };
+const toBookmark = (row) => ({ ...row, tags: JSON.parse(row.tags) });
 
 // Returns the parsed JSON body, or undefined if malformed or over 8KB.
 async function readJson(req) {
@@ -36,12 +36,13 @@ export function build({ dbPath = process.env.DB_PATH || 'bookmarks.db' } = {}) {
     tags TEXT NOT NULL,
     createdAt TEXT NOT NULL
   )`);
+  db.function('icontains', { deterministic: true }, (h, n) => (h.toLowerCase().includes(n.toLowerCase()) ? 1 : 0));
   const insert = db.prepare(`INSERT INTO bookmarks (url, title, tags, createdAt) VALUES (?, ?, ?, ?) ON CONFLICT(url) DO NOTHING RETURNING ${cols}`);
   const update = db.prepare(`UPDATE bookmarks SET title = COALESCE(?, title), tags = COALESCE(?, tags) WHERE id = ? RETURNING ${cols}`);
   const remove = db.prepare('DELETE FROM bookmarks WHERE id = ?');
   const list = db.prepare(`SELECT ${cols} FROM bookmarks
     WHERE (:tag IS NULL OR EXISTS (SELECT 1 FROM json_each(tags) WHERE value = :tag))
-      AND (:q IS NULL OR instr(lower(title), lower(:q)) OR instr(lower(url), lower(:q)))
+      AND (:q IS NULL OR icontains(title, :q) OR icontains(url, :q))
     ORDER BY id`);
   const tagCounts = db.prepare('SELECT value AS tag, count(*) AS count FROM bookmarks, json_each(bookmarks.tags) GROUP BY value ORDER BY count DESC, tag');
 
