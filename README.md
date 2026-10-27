@@ -23,4 +23,7 @@ From project 2 on, `/sidstack:factory` runs the board, this repo's GitHub Projec
 | 14 | Todo list API | `14-todo-api/` |
 | 15 | Multiple-choice quiz web app | `15-quiz-web/` |
 | 16 | CSV stats CLI | `16-csv-stats-cli/` |
+| 17 | Pomodoro timer web app | `17-pomodoro-timer-web/` |
+| 18 | Bookmark manager API | `18-bookmark-manager-api/` |
+| 19 | Access log stats CLI | `19-access-log-stats-cli/` |
 <!-- factory:index:end -->
