@@ -23,6 +23,8 @@ export function createProxy(origin) {
     if (isGet) {
       delete headers['if-none-match'];
       delete headers['if-modified-since'];
+      delete headers['if-match'];
+      delete headers['if-unmodified-since'];
       delete headers.range;
     }
     let entry;
